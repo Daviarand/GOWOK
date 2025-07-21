@@ -132,7 +132,7 @@ class Scene2 {
   }
   
   void initializeSubtitles() {
-    subtitleList=new String[]{"Pak Ustadz: Assalamu'alaikum, Nak.","Adil: Pergi! Jangan dekati saya!","Pak Ustadz: Turunlah, Nak. Apapun masalahmu, ini bukan jalannya.","Pak Ustadz: Hidupmu jauh lebih berharga dari itu.","Adil: Berharga? Hidup yang hancur karena utang?","Adil: Hidup yang isinya hanya gali lubang tutup lubang? Bapak tidak akan mengerti!","Pak Ustadz: Bapak mungkin tidak mengerti sepenuhnya apa yang kamu rasakan...","Pak Ustadz: Tapi Bapak tahu, setiap kesulitan pasti ada jalan keluarnya.","Adil: TIDAK ADA JALAN KELUAR UNTUKKU!","Adil: Utangku puluhan juta, nama baik keluarga hancur! Lebih baik aku akhiri saja!","Pak Ustadz: Nak... Dengarkan Bapak. Allah berfirman dalam Al-Qur'an...","Pak Ustadz: '...wa laa tai'asuu min rawhillah...'","Pak Ustadz: '...innahu laa yai'asu min rawhillahi illal qaumul kaafiruun.'","Pak Ustadz: Artinya, '...dan janganlah kamu berputus asa dari rahmat Allah.'","Pak Ustadz: 'Sesungguhnya tiada berputus asa dari rahmat Allah, melainkan kaum yang kafir.'","Pak Ustadz: Apakah kamu mau termasuk orang yang putus asa dari rahmat-Nya?","Pak Ustadz: Masalahmu besar, Bapak percaya. Tapi rahmat dan ampunan Allah jauh lebih besar.","Pak Ustadz: Mari, turunlah. Ikut Bapak ke masjid, kita tenangkan hati bersama.",""};
+    subtitleList=new String[]{"Pak Ustadz: Assalamu'alaikum, Nak.","Adil: Pergi! Jangan dekati saya!",""};
     subtitleDurations = calculateDurations(subtitleList, 1500, 75);
     
     subtitleListUstadzWalking = new String[] {"Pak Ustadz: Loh, apa itu? Kok ada pemuda berdiri di atas jembatan...","Pak Ustadz: Jangan-jangan dia mau bunuh diri.","Pak Ustadz: Sebaiknya aku hampiri untuk menasihatinya.",""};

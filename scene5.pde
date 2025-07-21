@@ -3,7 +3,13 @@ import processing.sound.*;
 class Scene5 {
   PApplet p;
 
-  // SEMUA VARIABEL ASLI ANDA
+  String[] subtitleList;
+  int[] subtitleDurations;
+  int currentSubtitleIndex;
+  int lastSubtitleChangeTime;
+  int charsToShow;
+  String currentFullText;
+
   PImage bg, adilJalan1, adilJalan2, ustadzJalan1, ustadzJalan2;
   PImage adilDuduk1, adilDuduk2, ustadzDuduk1, ustadzDuduk2;
   float scale = 0.3f;
@@ -23,31 +29,32 @@ class Scene5 {
   int jumlahSapi = 5;
   float[] sapiX, sapiY, sapiSpeed;
   int[] sapiArah;
-  
+boolean sudahDuduk = false;
+float posisiDudukY = 300; // atau berapa pun posisi duduk mereka
+
+
+
   SoundFile suaraJalanKaki;
 
-  // Constructor (menggantikan setup())
   Scene5(PApplet parent) {
     p = parent;
-    
-    // Inisialisasi Array
+
     awanX = new float[jumlahAwan]; awanY = new float[jumlahAwan]; awanSpeed = new float[jumlahAwan]; awanSize = new float[jumlahAwan];
     burungX = new float[jumlahBurung]; burungY = new float[jumlahBurung]; burungSpeed = new float[jumlahBurung];
     sapiX = new float[jumlahSapi]; sapiY = new float[jumlahSapi]; sapiSpeed = new float[jumlahSapi]; sapiArah = new int[jumlahSapi];
     rumputX = new float[jumlahRumput]; rumputY = new float[jumlahRumput]; rumputHeight = new float[jumlahRumput]; rumputPhase = new float[jumlahRumput];
 
-    // Memuat Aset
     bg = p.loadImage("Traditional Mosque in Rural Landscape (1).png");
     adilJalan1=p.loadImage("adiljalan1.png"); adilJalan2=p.loadImage("adiljalan2.png");
     ustadzJalan1=p.loadImage("ustadzjalan1.png"); ustadzJalan2=p.loadImage("ustadzjalan2.png");
     adilDuduk1=p.loadImage("Adilduduk1.png"); adilDuduk2=p.loadImage("Adilduduk2.png");
     ustadzDuduk1=p.loadImage("Ustadduduk1.png"); ustadzDuduk2=p.loadImage("Ustadduduk2.png");
     suaraJalanKaki = new SoundFile(p, "jalanKaki.mp3");
-    
     suaraJalanKaki.amp(0.6f);
+
+    initializeSubtitles();
   }
 
-  // Metode untuk me-reset state adegan
   void reset() {
     scaledWidth = adilJalan1.width * scale;
     scaledHeight = adilJalan1.height * scale;
@@ -65,11 +72,81 @@ class Scene5 {
     for (int i = 0; i < jumlahBurung; i++) {burungX[i]=p.random(p.width,p.width+800);burungY[i]=p.random(80,250);burungSpeed[i]=p.random(1.5f,3.5f);}
     for (int i = 0; i < jumlahSapi; i++) {sapiX[i]=p.random(50,0);sapiY[i]=p.random(610,650);sapiSpeed[i]=p.random(0.2f,0.6f);sapiArah[i]=(p.random(1)>0.5)?1:-1;}
     for (int i = 0; i < jumlahRumput; i++) {rumputX[i]=p.random(p.width);rumputY[i]=p.random(700,p.height);rumputHeight[i]=p.random(10,25);rumputPhase[i]=p.random(p.TWO_PI);}
-    
+
     if(!suaraJalanKaki.isPlaying()){
       suaraJalanKaki.loop();
     }
+
+    currentSubtitleIndex = 0;
+    lastSubtitleChangeTime = p.millis();
+    charsToShow = 0;
+    currentFullText = "";
   }
+
+  void initializeSubtitles() {
+    subtitleList = new String[]{
+      "Adil: Terima kasih sudah mau mendengar saya, Pak Ustadz.",
+      "Adil: Hati saya memang masih kacau… tapi entah kenapa, duduk di sini rasanya lebih ringan.",
+      "Pak Ustadz: Masjid memang tempat yang paling baik untuk menenangkan hati, Nak.",
+      "Pak Ustadz: Di sini, kita lebih dekat pada-Nya, dan pada saat kita mendekat, Allah pasti menyambut.",
+      "Adil: Saya masih takut, Pak. Takut menghadapi semuanya… Takut dihakimi orang… Takut gagal lagi...",
+      "Pak Ustadz: Rasa takut itu wajar. Tapi jangan biarkan ia menenggelamkanmu.",
+      "Pak Ustadz: Kita semua pernah jatuh, Adil. Tapi orang yang kuat adalah yang mau bangkit kembali.",
+      "Pak Ustadz: Dengar itu, Nak? Panggilan-Nya… Allah masih memanggilmu untuk kembali.",
+      "Adil: Saya… boleh ikut salat, Pak?",
+      "Pak Ustadz: Bukan hanya boleh. Hatimu sudah sangat rindu untuk bersujud, Nak.",
+      "Pak Ustadz: Ayo… kita wudhu dulu, lalu kita salat berjamaah.",
+      ""
+    };
+
+    subtitleDurations = new int[subtitleList.length];
+    int baseTime = 1500;
+    int timePerChar = 75;
+
+    for (int i = 0; i < subtitleList.length; i++) {
+      subtitleDurations[i] = baseTime + (subtitleList[i].length() * timePerChar);
+    }
+  }
+
+  void drawSubtitle() {
+    if (subtitleList[currentSubtitleIndex].isEmpty()) return;
+
+    if (p.millis() - lastSubtitleChangeTime > subtitleDurations[currentSubtitleIndex]) {
+      if (currentSubtitleIndex < subtitleList.length - 1) {
+        currentSubtitleIndex++;
+        currentFullText = "";
+      }
+    }
+
+    String fullText = subtitleList[currentSubtitleIndex];
+
+    if (!fullText.equals(currentFullText)) {
+      currentFullText = fullText;
+      charsToShow = 0;
+      lastSubtitleChangeTime = p.millis();
+    }
+
+    int maxChars = p.min(fullText.length(), (p.millis() - lastSubtitleChangeTime) / 70);
+    if (maxChars > charsToShow) charsToShow = maxChars;
+
+    String vis = fullText.substring(0, p.min(charsToShow, fullText.length()));
+
+    p.textSize(24);
+    float pad = 20;
+    float bW = p.min(p.textWidth(vis) + pad * 2, p.width * 0.8f);
+    float bH = 80;
+    float bX = (p.width - bW) / 2;
+    float bY = p.height - bH - 30;
+
+    p.fill(0, 160);
+    p.noStroke();
+    p.rect(bX, bY, bW, bH, 10);
+
+    p.fill(255);
+    p.textAlign(p.CENTER, p.CENTER);
+    p.text(vis, bX, bY, bW, bH);
+  }
+
 
   // Metode run() (menggantikan draw())
   void run() {
@@ -92,7 +169,7 @@ class Scene5 {
       if (adilX<=targetAdilX) {
         adilX=targetAdilX;ustadzX=targetUstadzX;sudahSampai=true;suaraJalanKaki.stop();
       } else {
-        adilX-=1.5;ustadzX-=1.5;
+        adilX-=2.5;ustadzX-=2.5;
       }
     }
     if (!sudahSampai) {
@@ -112,6 +189,19 @@ class Scene5 {
       dudukFrameCounter++;
     }
     frameCounter++;
+    
+if (statusAdil.equals("dudukAkhir") && statusUstadz.equals("dudukAkhir")) {
+  drawSubtitle();
+}
+
+
+if (currentSubtitleIndex == subtitleList.length - 1) {
+  if (p.millis() - lastSubtitleChangeTime > 2000) {
+    ((scene1)p).goToNextScene();
+  }
+}
+
+    
   }
 
   // === SEMUA FUNGSI GAMBAR ASLI ANDA ADA DI SINI, TIDAK DIUBAH ===
