@@ -17,7 +17,7 @@ class Scene4 {
   int jumlahAwan = 5; float[] awanX, awanY, awanSpeed, awanSize;
   int jumlahBurung = 15; float[] burungX, burungY, burungSpeed;
   float scale = 0.4f; float scaledWidth, scaledHeight;
-  float adilX, adilY, ustadzX, ustadzY; float karakterSpeed = 2.0f;
+  float adilX, adilY, ustadzX, ustadzY; float karakterSpeed = 3.5f;
   int frameCounter = 0; int frameInterval = 10;
   int jumlahRumput = 700; float[] rumputX, rumputY, rumputHeight, rumputPhase;
   int jumlahAyam = 4; float[] ayamX, ayamY, ayamSpeed; boolean[] ayamKanan;

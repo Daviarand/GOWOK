@@ -107,8 +107,8 @@ class Scene3 {
     }
   }
   void updateStateWalkingAway() {
-    adilX -= 2;
-    ustadzX -= 2;
+    adilX -= 3.5;
+    ustadzX -= 3.5;
     
     // BARU: Pemicu untuk pindah ke adegan 4 saat karakter keluar dari layar
     if (ustadzX < - (ustadzJalan1.width * scale)) {

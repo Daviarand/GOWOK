@@ -38,7 +38,7 @@ class Scene1 {
     bg = p.loadImage("tanpaPembatas2.png");
     karakterAdil = p.loadImage("adildiam.png");
     
-    subtitleList = new String[] { "Adil: Untuk apa aku terus hidup..." };
+    subtitleList = new String[] { "" };
 
     // Inisialisasi Lingkungan
     for (int i = 0; i < jumlahAwan; i++) {

@@ -19,6 +19,7 @@ SoundFile suaraBurung, suaraSungai;
 
 void setup() {
   size(1336, 768);
+  frameRate(60); // Atur target FPS ke 60
   
   suaraBurung = new SoundFile(this, "burungBerkicau.mp3");
   suaraSungai = new SoundFile(this, "suaraSungai.mp3");
@@ -33,7 +34,7 @@ void setup() {
   scene2 = new Scene2(this);
   scene3 = new Scene3(this);
   scene4 = new Scene4(this);
-  scene5 = new Scene5(this); 
+  scene5 = new Scene5(this);
 }
 
 void draw() {
