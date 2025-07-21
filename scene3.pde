@@ -163,7 +163,7 @@ class Scene3 {
       "Pak Ustadz: Itu pertanda hatimu masih hidup dan penuh cahaya.",
       "Adil: Semuanya dimulai dari iseng, Pak... Coba-coba judi online.",
       "Adil: Katanya bisa dapat uang cepat.",
-      "Pak Ustadz: Dan dunia yang fana ini memang penuh dengan tipu daya.",
+      "Pak Ustadz: Dunia yang fana ini memang penuh dengan tipu daya.",
       "Pak Ustadz: Tapi pintu taubat selalu terbuka.",
       ""
     };
