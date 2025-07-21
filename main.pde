@@ -15,6 +15,9 @@ Scene1 scene1; Scene2 scene2; Scene3 scene3; Scene4 scene4; Scene5 scene5;
 
 // === Aset Global & Variabel Transisi ===
 SoundFile suaraBurung, suaraSungai;
+SoundFile suaraDialog;
+boolean dialogSudahDimainkan = false; // TAMBAHKAN INI
+
 float alphaTransisi = 0;
 float kecepatanFade = 5; // Ubah untuk kecepatan transisi
 
@@ -24,19 +27,30 @@ void setup() {
   
   suaraBurung = new SoundFile(this, "burungBerkicau.mp3");
   suaraSungai = new SoundFile(this, "suaraSungai.mp3");
+  suaraDialog = new SoundFile(this, "dialog.mp3");
   
   if (adeganSekarang <= ADEGAN_TURUN_DAN_JALAN) suaraSungai.loop();
   suaraBurung.loop();
   
-  suaraBurung.amp(1);
-  suaraSungai.amp(0.3);
+  suaraBurung.amp(0.4);
+  suaraSungai.amp(0.1);
+  suaraDialog.amp(10);
   
-  scene1 = new Scene1(this); scene2 = new Scene2(this);
-  scene3 = new Scene3(this); scene4 = new Scene4(this);
+  scene1 = new Scene1(this); 
+  scene2 = new Scene2(this);
+  scene3 = new Scene3(this); 
+  scene4 = new Scene4(this);
   scene5 = new Scene5(this);
 }
 
 void draw() {
+  
+  // BARU: Logika untuk menunda pemutaran suara dialog
+  if (!dialogSudahDimainkan && millis() > 3000) { // Cek jika belum diputar & sudah lewat 2 detik
+    suaraDialog.play();
+    dialogSudahDimainkan = true; // Set penanda agar tidak diputar lagi
+  }
+  
   // Logika utama untuk menggambar adegan atau transisi
   switch (adeganSekarang) {
     case ADEGAN_AWAL: scene1.run(); break;
