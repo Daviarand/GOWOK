@@ -133,58 +133,51 @@
 
 
 
-
-// Deklarasi semua gambar yang akan digunakan
+// Variabel Latar dan Karakter
 PImage bg;
-PImage adilJalan1, adilJalan2;
-PImage ustadzJalan1, ustadzJalan2;
-PImage adilDuduk1, adilDuduk2;
-PImage ustadzDuduk1, ustadzDuduk2;
+PImage adilJalan1, adilJalan2, ustadzJalan1, ustadzJalan2;
+PImage adilDuduk1, adilDuduk2, ustadzDuduk1, ustadzDuduk2;
 
-// Variabel untuk skala dan posisi karakter
-float scale = 0.3; // <-- DIKEMBALIKAN ke ukuran awal saat berjalan
+float scale = 0.3;
 float scaledWidth, scaledHeight;
-float adilX, adilY;
-float ustadzX, ustadzY;
+float adilX, adilY, ustadzX, ustadzY;
 
-// Variabel untuk kontrol animasi
 int frameCounter = 0;
 int frameInterval = 10;
 boolean sudahSampai = false;
 
-// Status transisi karakter dari berjalan ke duduk
-String statusAdil = "jalan";
-String statusUstadz = "jalan";
-int dudukFrameCounter = 0;
-int dudukInterval = 30; // Durasi untuk setiap frame duduk
-int jedaAdilMulaiDuduk = 30; // Jeda sebelum adil mulai duduk
+// Status transisi duduk
+String statusAdil = "jalan", statusUstadz = "jalan";
+int dudukFrameCounter = 0, dudukInterval = 30, jedaAdilMulaiDuduk = 0;
 
-// Variabel untuk elemen latar belakang (Awan)
+// Variabel Awan dan Burung Terbang
 int jumlahAwan = 6;
-float[] awanX = new float[jumlahAwan];
-float[] awanY = new float[jumlahAwan];
-float[] awanSpeed = new float[jumlahAwan];
-float[] awanSize = new float[jumlahAwan];
-
-// Variabel untuk elemen latar belakang (Burung Terbang)
+float[] awanX = new float[jumlahAwan], awanY = new float[jumlahAwan];
+float[] awanSpeed = new float[jumlahAwan], awanSize = new float[jumlahAwan];
 int jumlahBurung = 5;
-float[] burungX = new float[jumlahBurung];
-float[] burungY = new float[jumlahBurung];
-float[] burungSpeed = new float[jumlahBurung];
+float[] burungX = new float[jumlahBurung], burungY = new float[jumlahBurung], burungSpeed = new float[jumlahBurung];
 
-// Variabel untuk efek rumput bergoyang
-float rumputOffset = 0;
+// Variabel Rumput Bergoyang
+int jumlahRumput = 500;
+float[] rumputX = new float[jumlahRumput];
+float[] rumputY = new float[jumlahRumput];
+float[] rumputHeight = new float[jumlahRumput];
+float[] rumputPhase = new float[jumlahRumput];
 
-// Posisi untuk burung yang diam di atap
-float[] burungDiamX = {580, 620, 650};
-float[] burungDiamY = {230, 225, 235};
+// Burung diam di atap masjid
+float[] burungDiamX = {580, 620, 650}, burungDiamY = {230, 225, 235};
 
+// Variabel untuk Sapi (Jumlah diubah menjadi 5)
+int jumlahSapi = 5;
+float[] sapiX = new float[jumlahSapi];
+float[] sapiY = new float[jumlahSapi];
+float[] sapiSpeed = new float[jumlahSapi];
+int[] sapiArah = new int[jumlahSapi];
 
 void setup() {
   size(1336, 768);
-  
-  // Memuat semua aset gambar
-  bg = loadImage("masjid.png");
+  bg = loadImage("Traditional Mosque in Rural Landscape (1).png"); 
+
   adilJalan1 = loadImage("adiljalan1.png");
   adilJalan2 = loadImage("adiljalan2.png");
   ustadzJalan1 = loadImage("ustadzjalan1.png");
@@ -194,86 +187,88 @@ void setup() {
   ustadzDuduk1 = loadImage("Ustadduduk1.png");
   ustadzDuduk2 = loadImage("Ustadduduk2.png");
 
-  // Menghitung ukuran karakter setelah di-skala
   scaledWidth = adilJalan1.width * scale;
   scaledHeight = adilJalan1.height * scale;
 
-  // Posisi awal karakter (di luar layar kanan)
-  adilX = width + 120; // Adil sedikit di belakang ustadz
-  ustadzX = width + 50;
+  adilX = width + 50;
+  ustadzX = adilX - 70;
   adilY = 630;
   ustadzY = 630;
 
-  // Inisialisasi posisi dan properti awan
   for (int i = 0; i < jumlahAwan; i++) {
-    awanX[i] = random(width);
+    awanX[i] = map(i, 0, jumlahAwan - 1, 0, width);
     awanY[i] = random(50, 200);
     awanSpeed[i] = random(0.3, 1.2);
     awanSize[i] = random(1.2, 2.5);
   }
-
-  // Inisialisasi posisi dan properti burung terbang
   for (int i = 0; i < jumlahBurung; i++) {
     burungX[i] = random(width, width + 800);
     burungY[i] = random(80, 250);
     burungSpeed[i] = random(1.5, 3.5);
   }
+  
+  for (int i = 0; i < jumlahSapi; i++) {
+    sapiX[i] = random(50, 0); 
+    sapiY[i] = random(610, 650);      
+    sapiSpeed[i] = random(0.2, 0.6);
+    sapiArah[i] = (random(1) > 0.5) ? 1 : -1; 
+  }
+  
+  for (int i = 0; i < jumlahRumput; i++) {
+    rumputX[i] = random(width);
+    rumputY[i] = random(700, height); 
+    rumputHeight[i] = random(10, 25);
+    rumputPhase[i] = random(TWO_PI);
+  }
 }
 
 void draw() {
-  // --- GAMBAR LATAR BELAKANG DAN EFEK VISUAL ---
+  background(255);
+  
   imageMode(CORNER);
   image(bg, 0, 0, width, height);
+  
+  imageMode(CENTER);
 
-  drawKotakInfaq();
+  drawRumput(); 
   drawBurungDiam();
-  drawRumput();
+  
+  updateAndDrawSapi();
+  drawKotakInfaq(); 
 
-  // Menggambar dan menggerakkan awan
+  imageMode(CORNER);
   for (int i = 0; i < jumlahAwan; i++) {
     drawAwan(awanX[i], awanY[i], awanSize[i]);
     awanX[i] -= awanSpeed[i];
-    if (awanX[i] < -200) { // Jika keluar layar, reset posisi
-      awanX[i] = width + random(100, 300);
-      awanY[i] = random(50, 200);
-    }
+    if (awanX[i] < -200) awanX[i] = width + random(100, 300);
   }
-
-  // Menggambar dan menggerakkan burung terbang
   for (int i = 0; i < jumlahBurung; i++) {
     drawBurung(burungX[i], burungY[i]);
     burungX[i] -= burungSpeed[i];
-    if (burungX[i] < -50) { // Jika keluar layar, reset posisi
-      burungX[i] = width + random(100, 400);
-      burungY[i] = random(80, 250);
+    if (burungX[i] < -50) burungX[i] = width + random(100, 400);
+  }
+  
+  imageMode(CENTER);
+
+  // --- Logika Karakter Jalan & Duduk (Diperbaiki agar tidak kebablasan) ---
+  float targetAdilX = width / 2 - 100;  
+  float targetUstadzX = width / 2 - 10;
+
+  if (!sudahSampai) {
+    // Cek dulu APAKAH karakter SUDAH melewati atau TEPAT di target
+    if (adilX <= targetAdilX) {
+      // Jika ya, kunci posisinya dan berhenti
+      adilX = targetAdilX;
+      ustadzX = targetUstadzX;
+      sudahSampai = true;
+    } else {
+      // Jika belum, baru gerakkan karakter
+      adilX -= 1.5;
+      ustadzX -= 1.5;
     }
   }
 
-  // Kembalikan mode gambar ke CENTER untuk karakter
-  imageMode(CENTER);
-
-  // --- LOGIKA GERAKAN DAN POSISI KARAKTER ---
-
-  // Tentukan posisi target akhir saat duduk
-  float targetUstadzX = width / 2.0 + 10;
-  float jarakDuduk = 70; 
-  float targetAdilX = targetUstadzX - jarakDuduk;
-
-  // Jika karakter belum sampai di tujuan
   if (!sudahSampai) {
-    // Gerakkan kedua karakter ke kiri
-    float speed = 2.0;
-    adilX -= speed;
-    ustadzX -= speed;
-
-    // Cek jika Ustadz sudah mencapai posisi targetnya
-    if (ustadzX <= targetUstadzX) {
-      ustadzX = targetUstadzX; // Kunci posisi akhir Ustadz
-      adilX = targetAdilX;     // Kunci posisi akhir Adil
-      sudahSampai = true;      // Set status menjadi sudah sampai
-    }
-
-    // Tampilkan animasi berjalan
     if ((frameCounter / frameInterval) % 2 == 0) {
       image(adilJalan1, adilX, adilY, scaledWidth, scaledHeight);
       image(ustadzJalan1, ustadzX, ustadzY, scaledWidth, scaledHeight);
@@ -281,71 +276,59 @@ void draw() {
       image(adilJalan2, adilX, adilY, scaledWidth, scaledHeight);
       image(ustadzJalan2, ustadzX, ustadzY, scaledWidth, scaledHeight);
     }
-
-  } else { // Jika sudah sampai, mulai animasi duduk
-    // ================== PERUBAHAN DI SINI ==================
-    float dudukScale = 0.15; // DIUBAH, ukuran saat duduk dikecilkan
-    // =======================================================
+  } else {
+    // === PERUBAHAN DI SINI: Skala dipisahkan ===
     
-    float dudukWidth = adilDuduk1.width * dudukScale;
-    float dudukHeight = adilDuduk1.height * dudukScale;
-    float dudukYOffset = 60; // Offset Y disesuaikan dengan skala baru
+    // Skala duduk untuk Adil (bisa diubah)
+    float dudukScaleAdil = 0.20; 
+    float dudukWidthAdil = adilDuduk1.width * dudukScaleAdil;
+    float dudukHeightAdil = adilDuduk1.height * dudukScaleAdil;
+    
+    // Skala duduk untuk Ustadz (bisa diubah)
+    float dudukScaleUstadz = 0.10; // Dibuat sedikit lebih besar sebagai contoh
+    float dudukWidthUstadz = ustadzDuduk1.width * dudukScaleUstadz;
+    float dudukHeightUstadz = ustadzDuduk1.height * dudukScaleUstadz;
 
-    // ---- Animasi Duduk Ustadz ----
-    if (statusUstadz.equals("jalan")) {
+    float dudukY = 600; 
+
+    if (statusUstadz.equals("jalan") && statusAdil.equals("jalan")) {
       statusUstadz = "dudukTransisi";
-      dudukFrameCounter = 0; 
-    }
-
-    if (statusUstadz.equals("dudukTransisi")) {
-      image(ustadzDuduk1, ustadzX, ustadzY + dudukYOffset, dudukWidth, dudukHeight);
-      if (dudukFrameCounter >= dudukInterval) {
-        statusUstadz = "dudukAkhir"; 
-      }
+      dudukFrameCounter = 0;
     }
     
-    if (statusUstadz.equals("dudukAkhir")) {
-       image(ustadzDuduk2, ustadzX, ustadzY + dudukYOffset, dudukWidth, dudukHeight);
+    // Menggunakan skala Ustadz
+    if (statusUstadz.equals("dudukTransisi")) {
+      if (dudukFrameCounter < dudukInterval) image(ustadzDuduk1, ustadzX, dudukY, dudukWidthUstadz, dudukHeightUstadz);
+      else statusUstadz = "dudukAkhir";
     }
-
-    // ---- Animasi Duduk Adil ----
-    if (statusAdil.equals("jalan") && dudukFrameCounter >= jedaAdilMulaiDuduk) {
+    if (statusUstadz.equals("dudukAkhir")) {
+      image(ustadzDuduk2, ustadzX, dudukY, dudukWidthUstadz, dudukHeightUstadz);
+    }
+    
+    if (statusAdil.equals("jalan")) {
+      image(adilJalan1, adilX, adilY, scaledWidth, scaledHeight);
+    }
+    
+    if (dudukFrameCounter >= jedaAdilMulaiDuduk && statusAdil.equals("jalan")) {
       statusAdil = "dudukTransisi";
     }
-
-    // Jika Adil masih "jalan", tampilkan animasi berjalan dengan skala normal
-    if (statusAdil.equals("jalan")) {
-       if ((frameCounter / frameInterval) % 2 == 0) {
-           image(adilJalan1, adilX, adilY, scaledWidth, scaledHeight);
-       } else {
-           image(adilJalan2, adilX, adilY, scaledWidth, scaledHeight);
-       }
-    }
-
-    // Jika Adil dalam transisi duduk, gunakan skala duduk
-    if (statusAdil.equals("dudukTransisi")) {
-      image(adilDuduk1, adilX, adilY + dudukYOffset, dudukWidth, dudukHeight);
-      int adilFrame = dudukFrameCounter - jedaAdilMulaiDuduk;
-      if (adilFrame >= dudukInterval) {
-        statusAdil = "dudukAkhir";
-      }
-    }
     
-    // Jika Adil sudah selesai transisi, gunakan skala duduk
-    if (statusAdil.equals("dudukAkhir")) {
-      image(adilDuduk2, adilX, adilY + dudukYOffset, dudukWidth, dudukHeight);
+    // Menggunakan skala Adil
+    if (statusAdil.equals("dudukTransisi")) {
+      int adilFrame = dudukFrameCounter - jedaAdilMulaiDuduk;
+      if (adilFrame < dudukInterval) image(adilDuduk1, adilX, dudukY, dudukWidthAdil, dudukHeightAdil);
+      else statusAdil = "dudukAkhir";
     }
-
+    if (statusAdil.equals("dudukAkhir")) {
+      image(adilDuduk2, adilX, dudukY, dudukWidthAdil, dudukHeightAdil);
+    }
     dudukFrameCounter++;
   }
 
-  // Tingkatkan counter untuk animasi
   frameCounter++;
-  rumputOffset += 0.05; // Untuk efek rumput bergoyang
 }
 
-
-// --- FUNGSI-FUNGSI BANTUAN (Tidak Ada Perubahan) ---
+// === FUNGSI GAMBAR ===
 
 void drawAwan(float x, float y, float s) {
   noStroke();
@@ -362,29 +345,62 @@ void drawBurung(float x, float y) {
   triangle(x, y, x + 10, y - 5, x + 5, y);
 }
 
-void drawRumput() {
-  stroke(34, 139, 34);
-  strokeWeight(1.5);
-  for (int i = 0; i < width; i += 2) {
-    if (i < 220 || i > 1030) {
-      float sway = sin(rumputOffset + i * 0.1) * 3;
-      float yDasar = height - 20;
-      float tinggiRumput = 30 + sin(i * 0.7 + rumputOffset) * 3;
-      line(i, yDasar, i + sway, yDasar - tinggiRumput);
-    }
-  }
-}
-
 void drawBurungDiam() {
   for (int i = 0; i < burungDiamX.length; i++) {
     float x = burungDiamX[i];
-    float y = burungDiamY[i] + 150;
+    float y = burungDiamY[i] + 150; 
     fill(30);
     noStroke();
     ellipse(x, y, 10, 10);
     ellipse(x + 6, y - 3, 6, 6);
     triangle(x + 9, y - 3, x + 13, y - 1, x + 9, y + 1);
   }
+}
+
+void updateAndDrawSapi() {
+  for (int i = 0; i < jumlahSapi; i++) {
+    sapiX[i] += sapiSpeed[i] * sapiArah[i];
+
+    if (sapiX[i] < 50 || sapiX[i] > 200) { 
+      sapiArah[i] *= -1;
+    }
+    
+    drawSapi(sapiX[i], sapiY[i], sapiArah[i]);
+  }
+}
+
+void drawSapi(float x, float y, int arah) {
+  pushMatrix();
+  translate(x, y);
+  scale(0.20); 
+  
+  if (arah == -1) {
+    scale(-1, 1);
+  }
+
+  noStroke();
+  fill(255);
+  ellipse(0, 0, 150, 90);
+
+  fill(30);
+  ellipse(-30, -10, 40, 30);
+  ellipse(25, 15, 30, 25);
+  
+  fill(255);
+  ellipse(75, -25, 60, 50);
+  
+  fill(30);
+  ellipse(90, -30, 8, 8);
+
+  stroke(30);
+  strokeWeight(10);
+  line(-40, 20, -40, 60);
+  line(40, 20, 40, 60);
+  strokeWeight(8);
+  line(-30, 20, -30, 58);
+  line(30, 20, 30, 58);
+
+  popMatrix();
 }
 
 void drawKotakInfaq() {
@@ -403,4 +419,12 @@ void drawKotakInfaq() {
   textAlign(CENTER, CENTER);
   textSize(12);
   text("INFAQ", kotakX + kotakWidth / 2, kotakY + kotakHeight / 2 + 5);
+}
+
+void drawRumput() {
+  for (int i = 0; i < jumlahRumput; i++) {
+    float sway = sin(frameCount * 0.03 + rumputPhase[i]) * 5; 
+    stroke(139, 190, 109, 140); 
+    line(rumputX[i], rumputY[i], rumputX[i] + sway, rumputY[i] - rumputHeight[i]);
+  }
 }
