@@ -33,7 +33,7 @@ void setup() {
   scene2 = new Scene2(this);
   scene3 = new Scene3(this);
   scene4 = new Scene4(this);
-  scene5 = new Scene5(this); // BARU
+  scene5 = new Scene5(this); 
 }
 
 void draw() {
@@ -66,9 +66,17 @@ void goToNextScene() {
     scene3.reset();
   } else if (adeganSekarang == ADEGAN_TURUN_DAN_JALAN) {
     adeganSekarang = ADEGAN_LADANG;
+    // BARU: Hentikan suara sungai saat akan masuk ke Scene 4
+    if (suaraSungai.isPlaying()) {
+      suaraSungai.stop();
+    }
     scene4.reset();
-  } else if (adeganSekarang == ADEGAN_LADANG) { // BARU
+  } else if (adeganSekarang == ADEGAN_LADANG) {
     adeganSekarang = ADEGAN_MASJID;
+    // Pastikan suara sungai tetap berhenti saat masuk Scene 5
+    if (suaraSungai.isPlaying()) {
+      suaraSungai.stop();
+    }
     scene5.reset();
   }
 }
